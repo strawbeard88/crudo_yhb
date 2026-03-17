@@ -1,45 +1,52 @@
 {
   "actors": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Leonardo DiCaprio",
       "nationality": "USA",
       "birthYear": 1974
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Emma Stone",
       "nationality": "USA",
       "birthYear": 1988
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Russell Crowe",
       "nationality": "Nya Zeeland",
       "birthYear": 1964
+    },
+    {
+      "id": "e7cc",
+      "name": "test",
+      "nationality": "test",
+      "birthYear": 1900
     }
   ],
   "movies": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Inception",
       "genre": "Sci-Fi",
       "year": 2010,
       "leadActorId": 1
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "La La Land",
       "genre": "Drama",
       "year": 2016,
       "leadActorId": 2
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "Gladiator",
       "genre": "Action",
       "year": 2000,
       "leadActorId": 3
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
