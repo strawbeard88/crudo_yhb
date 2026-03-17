@@ -17,12 +17,6 @@
       "name": "Russell Crowe",
       "nationality": "Nya Zeeland",
       "birthYear": 1964
-    },
-    {
-      "id": "e7cc",
-      "name": "test",
-      "nationality": "test",
-      "birthYear": 1900
     }
   ],
   "movies": [
@@ -46,13 +40,7 @@
       "genre": "Action",
       "year": 2000,
       "leadActorId": 3
-    },
-    {
-      "id": "3545",
-      "title": "Test",
-      "genre": "test 2",
-      "year": 1900,
-      "leadActorId": 3
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
