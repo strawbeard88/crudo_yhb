@@ -43,6 +43,39 @@
       </section>
 
       <section class="panel controls">
+        <h2>Skapa huvudskådis</h2>
+        <form id="createActorForm">
+          <label for="createActorName">Namn</label>
+          <input
+            id="createActorName"
+            name="name"
+            type="text"
+            placeholder="Till exempel Cate Blanchett"
+          />
+
+          <label for="createActorNationality">Nationalitet</label>
+          <input
+            id="createActorNationality"
+            name="nationality"
+            type="text"
+            placeholder="Till exempel Australien"
+          />
+
+          <label for="createActorBirthYear">Födelseår</label>
+          <input
+            id="createActorBirthYear"
+            name="birthYear"
+            type="number"
+            min="1800"
+            max="2100"
+            placeholder="Till exempel 1969"
+          />
+
+          <button type="submit">Skapa huvudskådis</button>
+        </form>
+      </section>
+
+      <section class="panel controls">
         <h2>Skapa film</h2>
         <form id="createMovieForm">
           <label for="createTitle">Titel</label>
@@ -159,5 +192,6 @@
         <ul id="actorList" class="post-list"></ul>
       </section>
     </main>
+    <script src="app.js"></script>
   </body>
 </html>
