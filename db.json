@@ -54,6 +54,5 @@
       "year": 1900,
       "leadActorId": 3
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

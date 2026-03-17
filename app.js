@@ -323,6 +323,33 @@ updateMovieForm.addEventListener("submit", async function (event) {
   }
 });
 
+async function deleteMovie(id) {
+  const response = await fetch(MOVIES_URL + "/" + id, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte ta bort filmen");
+  }
+}
+
+const deleteMovieForm = document.getElementById("deleteMovieForm");
+
+deleteMovieForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const id = document.getElementById("deleteMovieId").value.trim();
+
+  try {
+    await deleteMovie(id);
+    setStatus("Film med id " + id + " har tagits bort.");
+    deleteMovieForm.reset();
+    loadData();
+  } catch (error) {
+    setStatus("Fel: Kunde inte ta bort filmen.", true);
+  }
+});
+
 loadMoviesBtn.addEventListener("click", function () {
   loadData();
 });
