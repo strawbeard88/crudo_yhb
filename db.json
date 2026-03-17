@@ -21,13 +21,6 @@
   ],
   "movies": [
     {
-      "title": "Testar ändring",
-      "genre": "Drama",
-      "year": 2011,
-      "leadActorId": 0,
-      "id": "1"
-    },
-    {
       "id": "2",
       "title": "La La Land",
       "genre": "Drama",

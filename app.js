@@ -137,7 +137,7 @@ async function fetchResource(url) {
   return response.json();
 }
 
-async function loadData() {
+async function loadData(successMessage) {
   setStatus("Hämtar filmer och huvudskådisar...");
 
   try {
@@ -150,7 +150,9 @@ async function loadData() {
     renderActors(actors);
     populateActorSelect(createLeadActorSelect, actors);
     populateActorSelect(updateLeadActorSelect, actors);
-    setStatus("Data hämtad. Filmer och huvudskådisar visas nu.");
+    setStatus(
+      successMessage || "Data hämtad. Filmer och huvudskådisar visas nu.",
+    );
   } catch (error) {
     setStatus(
       "Kunde inte hämta data. Kontrollera att json-server är igång.",
@@ -236,9 +238,8 @@ createActorForm.addEventListener("submit", async function (event) {
 
   try {
     await createActor(name, nationality, birthYear);
-    setStatus("Huvudskådis skapad! Listan uppdateras.");
     createActorForm.reset();
-    loadData();
+    await loadData("Huvudskådis skapad! Listan uppdateras.");
   } catch (error) {
     setStatus("Fel: Kunde inte skapa huvudskådis.", true);
   }
@@ -275,9 +276,8 @@ createMovieForm.addEventListener("submit", async function (event) {
 
   try {
     await createMovie(title, genre, year, leadActorId);
-    setStatus("Film skapad! Listan uppdateras.");
     createMovieForm.reset();
-    loadData();
+    await loadData("Film skapad! Listan uppdateras.");
   } catch (error) {
     setStatus("Fel: Kunde inte skapa filmen.", true);
   }
@@ -315,9 +315,8 @@ updateMovieForm.addEventListener("submit", async function (event) {
 
   try {
     await updateMovie(id, title, genre, year, leadActorId);
-    setStatus("Film med id " + id + " uppdaterad!");
     updateMovieForm.reset();
-    loadData();
+    await loadData("Film med id " + id + " uppdaterad!");
   } catch (error) {
     setStatus("Fel: Kunde inte uppdatera filmen.", true);
   }
@@ -342,9 +341,8 @@ deleteMovieForm.addEventListener("submit", async function (event) {
 
   try {
     await deleteMovie(id);
-    setStatus("Film med id " + id + " har tagits bort.");
     deleteMovieForm.reset();
-    loadData();
+    await loadData("Film med id " + id + " har tagits bort.");
   } catch (error) {
     setStatus("Fel: Kunde inte ta bort filmen.", true);
   }
