@@ -283,6 +283,46 @@ createMovieForm.addEventListener("submit", async function (event) {
   }
 });
 
+async function updateMovie(id, title, genre, year, leadActorId) {
+  const response = await fetch(MOVIES_URL + "/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: title,
+      genre: genre,
+      year: Number(year),
+      leadActorId: Number(leadActorId),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte uppdatera filmen");
+  }
+
+  return response.json();
+}
+
+const updateMovieForm = document.getElementById("updateMovieForm");
+
+updateMovieForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const id = document.getElementById("updateMovieId").value.trim();
+  const title = document.getElementById("updateTitle").value.trim();
+  const genre = document.getElementById("updateGenre").value.trim();
+  const year = document.getElementById("updateYear").value;
+  const leadActorId = document.getElementById("updateLeadActor").value;
+
+  try {
+    await updateMovie(id, title, genre, year, leadActorId);
+    setStatus("Film med id " + id + " uppdaterad!");
+    updateMovieForm.reset();
+    loadData();
+  } catch (error) {
+    setStatus("Fel: Kunde inte uppdatera filmen.", true);
+  }
+});
+
 loadMoviesBtn.addEventListener("click", function () {
   loadData();
 });

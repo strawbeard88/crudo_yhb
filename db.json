@@ -27,11 +27,11 @@
   ],
   "movies": [
     {
-      "id": "1",
-      "title": "Inception",
-      "genre": "Sci-Fi",
-      "year": 2010,
-      "leadActorId": 1
+      "title": "Testar ändring",
+      "genre": "Drama",
+      "year": 2011,
+      "leadActorId": 0,
+      "id": "1"
     },
     {
       "id": "2",
