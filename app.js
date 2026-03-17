@@ -26,7 +26,7 @@ function populateActorSelect(select, actors) {
 
   const placeholder = document.createElement("option");
   placeholder.value = "";
-  placeholder.textContent = "Valj huvudskadis";
+  placeholder.textContent = "Välj huvudskådis";
   select.appendChild(placeholder);
 
   actors.forEach(function (actor) {
@@ -47,7 +47,7 @@ function createMovieItem(movie, actorName) {
   info.textContent = movie.genre + " • " + movie.year;
 
   const actorInfo = document.createElement("p");
-  actorInfo.textContent = "Huvudskadis: " + actorName;
+  actorInfo.textContent = "Huvudskådis: " + actorName;
 
   content.appendChild(titleText);
   content.appendChild(info);
@@ -73,7 +73,7 @@ function createActorItem(actor) {
   nameText.textContent = actor.name;
 
   const info = document.createElement("p");
-  info.textContent = actor.nationality + " • Fodd " + actor.birthYear;
+  info.textContent = actor.nationality + " • Född " + actor.birthYear;
 
   content.appendChild(nameText);
   content.appendChild(info);
@@ -106,7 +106,7 @@ function renderMovies(movies, actors) {
   );
 
   movies.forEach(function (movie) {
-    const actorName = actorsById.get(Number(movie.leadActorId)) || "Okand";
+    const actorName = actorsById.get(Number(movie.leadActorId)) || "Okänd";
     movieList.appendChild(createMovieItem(movie, actorName));
   });
 }
@@ -117,7 +117,7 @@ function renderActors(actors) {
   if (!actors.length) {
     const empty = document.createElement("p");
     empty.className = "empty";
-    empty.textContent = "Inga huvudskadisar hittades.";
+    empty.textContent = "Inga huvudskådisar hittades.";
     actorList.appendChild(empty);
     return;
   }
@@ -138,7 +138,7 @@ async function fetchResource(url) {
 }
 
 async function loadData() {
-  setStatus("Hamtar filmer och huvudskadisar...");
+  setStatus("Hämtar filmer och huvudskådisar...");
 
   try {
     const [movies, actors] = await Promise.all([
@@ -150,14 +150,60 @@ async function loadData() {
     renderActors(actors);
     populateActorSelect(createLeadActorSelect, actors);
     populateActorSelect(updateLeadActorSelect, actors);
-    setStatus("Data hamtad. Filmer och huvudskadisar visas nu.");
+    setStatus("Data hämtad. Filmer och huvudskådisar visas nu.");
   } catch (error) {
     setStatus(
-      "Kunde inte hamta data. Kontrollera att json-server ar igang.",
+      "Kunde inte hämta data. Kontrollera att json-server är igång.",
       true,
     );
   }
 }
+
+const movieByIdForm = document.getElementById("movieByIdForm");
+const singleMovieResult = document.getElementById("singleMovieResult");
+
+function renderSingleMovie(movie, actorName) {
+  singleMovieResult.textContent = "";
+
+  const titleText = document.createElement("strong");
+  titleText.textContent = movie.title;
+
+  const info = document.createElement("p");
+  info.textContent = movie.genre + " • " + movie.year;
+
+  const actorInfo = document.createElement("p");
+  actorInfo.textContent = "Huvudskådis: " + actorName;
+
+  const idTag = document.createElement("span");
+  idTag.className = "post-id";
+  idTag.textContent = "ID " + movie.id;
+
+  singleMovieResult.appendChild(titleText);
+  singleMovieResult.appendChild(info);
+  singleMovieResult.appendChild(actorInfo);
+  singleMovieResult.appendChild(idTag);
+}
+
+movieByIdForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const id = document.getElementById("movieIdInput").value.trim();
+
+  try {
+    const movie = await fetchResource(MOVIES_URL + "/" + id);
+    const actor = await fetchResource(ACTORS_URL + "/" + movie.leadActorId);
+    const actorName = actor.name || "Okänd";
+    renderSingleMovie(movie, actorName);
+    setStatus("Film med id " + id + " hämtad.");
+  } catch (error) {
+    singleMovieResult.textContent = "";
+    const msg = document.createElement("p");
+    msg.className = "empty";
+    msg.textContent = "Ingen film hittades med id " + id + ".";
+    singleMovieResult.appendChild(msg);
+    setStatus("Ingen film hittades med id " + id + ".", true);
+  }
+});
 
 async function createActor(name, nationality, birthYear) {
   const response = await fetch(ACTORS_URL, {
@@ -171,7 +217,7 @@ async function createActor(name, nationality, birthYear) {
   });
 
   if (!response.ok) {
-    throw new Error("Kunde inte skapa huvudskadis");
+    throw new Error("Kunde inte skapa huvudskådis");
   }
 
   return response.json();
@@ -190,11 +236,11 @@ createActorForm.addEventListener("submit", async function (event) {
 
   try {
     await createActor(name, nationality, birthYear);
-    setStatus("Huvudskadis skapad! Listan uppdateras.");
+    setStatus("Huvudskådis skapad! Listan uppdateras.");
     createActorForm.reset();
     loadData();
   } catch (error) {
-    setStatus("Fel: Kunde inte skapa huvudskadis.", true);
+    setStatus("Fel: Kunde inte skapa huvudskådis.", true);
   }
 });
 
