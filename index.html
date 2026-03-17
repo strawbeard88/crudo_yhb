@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRUD Filmer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <h1>Filmkatalog med huvudskådis</h1>
+        <p>
+          Här ska du kunna hämta, skapa, uppdatera och ta bort filmer samt se
+          vilken huvudskådis som hör till varje film.
+        </p>
+        <p id="status" class="status">Statusmeddelanden visas här.</p>
+      </section>
+
+      <section class="panel controls">
+        <h2>Hämta filmer</h2>
+        <button id="loadMoviesBtn" type="button">Visa alla filmer</button>
+
+        <form id="movieByIdForm">
+          <label for="movieIdInput">Hämta en film via id</label>
+          <div class="form-row">
+            <input
+              id="movieIdInput"
+              name="movieId"
+              type="number"
+              min="1"
+              placeholder="Ange filmens id"
+            />
+            <button type="submit">Visa film</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel controls">
+        <h2>Skapa film</h2>
+        <form id="createMovieForm">
+          <label for="createTitle">Titel</label>
+          <input
+            id="createTitle"
+            name="title"
+            type="text"
+            placeholder="Till exempel Interstellar"
+          />
+
+          <label for="createGenre">Genre</label>
+          <input
+            id="createGenre"
+            name="genre"
+            type="text"
+            placeholder="Till exempel Sci-Fi"
+          />
+
+          <label for="createYear">Utgivningsår</label>
+          <input
+            id="createYear"
+            name="year"
+            type="number"
+            min="1900"
+            max="2100"
+            placeholder="Till exempel 2014"
+          />
+
+          <label for="createLeadActor">Huvudskådis</label>
+          <select id="createLeadActor" name="leadActorId">
+            <option value="">Välj huvudskådis</option>
+          </select>
+
+          <button type="submit">Skapa film</button>
+        </form>
+      </section>
+
+      <section class="panel controls">
+        <h2>Uppdatera film</h2>
+        <form id="updateMovieForm">
+          <label for="updateMovieId">Film-id</label>
+          <input
+            id="updateMovieId"
+            name="id"
+            type="number"
+            min="1"
+            placeholder="Vilken film vill du uppdatera?"
+          />
+
+          <label for="updateTitle">Ny titel</label>
+          <input
+            id="updateTitle"
+            name="title"
+            type="text"
+            placeholder="Ny filmtitel"
+          />
+
+          <label for="updateGenre">Ny genre</label>
+          <input
+            id="updateGenre"
+            name="genre"
+            type="text"
+            placeholder="Ny genre"
+          />
+
+          <label for="updateYear">Nytt utgivningsår</label>
+          <input
+            id="updateYear"
+            name="year"
+            type="number"
+            min="1900"
+            max="2100"
+            placeholder="Nytt årtal"
+          />
+
+          <label for="updateLeadActor">Ny huvudskådis</label>
+          <select id="updateLeadActor" name="leadActorId">
+            <option value="">Välj huvudskådis</option>
+          </select>
+
+          <button type="submit">Uppdatera film</button>
+        </form>
+      </section>
+
+      <section class="panel controls">
+        <h2>Ta bort film</h2>
+        <form id="deleteMovieForm">
+          <label for="deleteMovieId">Film-id</label>
+          <div class="form-row">
+            <input
+              id="deleteMovieId"
+              name="id"
+              type="number"
+              min="1"
+              placeholder="Ange filmens id"
+            />
+            <button type="submit">Ta bort</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel">
+        <h2>Detaljer för vald film</h2>
+        <div id="singleMovieResult"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Alla filmer</h2>
+        <ul id="movieList" class="post-list"></ul>
+      </section>
+
+      <section class="panel">
+        <h2>Huvudskådisar</h2>
+        <ul id="actorList" class="post-list"></ul>
+      </section>
+    </main>
+  </body>
+</html>
