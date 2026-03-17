@@ -244,6 +244,45 @@ createActorForm.addEventListener("submit", async function (event) {
   }
 });
 
+async function createMovie(title, genre, year, leadActorId) {
+  const response = await fetch(MOVIES_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: title,
+      genre: genre,
+      year: Number(year),
+      leadActorId: Number(leadActorId),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte skapa filmen");
+  }
+
+  return response.json();
+}
+
+const createMovieForm = document.getElementById("createMovieForm");
+
+createMovieForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+
+  const title = document.getElementById("createTitle").value.trim();
+  const genre = document.getElementById("createGenre").value.trim();
+  const year = document.getElementById("createYear").value;
+  const leadActorId = document.getElementById("createLeadActor").value;
+
+  try {
+    await createMovie(title, genre, year, leadActorId);
+    setStatus("Film skapad! Listan uppdateras.");
+    createMovieForm.reset();
+    loadData();
+  } catch (error) {
+    setStatus("Fel: Kunde inte skapa filmen.", true);
+  }
+});
+
 loadMoviesBtn.addEventListener("click", function () {
   loadData();
 });

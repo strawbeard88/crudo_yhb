@@ -46,6 +46,13 @@
       "genre": "Action",
       "year": 2000,
       "leadActorId": 3
+    },
+    {
+      "id": "3545",
+      "title": "Test",
+      "genre": "test 2",
+      "year": 1900,
+      "leadActorId": 3
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
