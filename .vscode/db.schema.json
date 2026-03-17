@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": ["string", "number"]
+          },
+          "name": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "birthYear": {
+            "type": "number"
+          }
+        },
+        "required": ["id", "name", "nationality", "birthYear"],
+        "additionalProperties": false
+      }
+    },
+    "movies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": ["string", "number"]
+          },
+          "title": {
+            "type": "string"
+          },
+          "genre": {
+            "type": "string"
+          },
+          "year": {
+            "type": "number"
+          },
+          "leadActorId": {
+            "type": ["string", "number"]
+          }
+        },
+        "required": ["id", "title", "genre", "year", "leadActorId"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["actors", "movies"],
+  "additionalProperties": false
+}

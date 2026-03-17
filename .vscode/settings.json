@@ -1,3 +1,9 @@
 {
-  "liveServer.settings.port": 5502
+  "liveServer.settings.port": 5502,
+  "json.schemas": [
+    {
+      "fileMatch": ["db.json"],
+      "url": "./.vscode/db.schema.json"
+    }
+  ]
 }

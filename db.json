@@ -17,6 +17,12 @@
       "name": "Russell Crowe",
       "nationality": "Nya Zeeland",
       "birthYear": 1964
+    },
+    {
+      "id": "ead4",
+      "name": "Test 1",
+      "nationality": "Test 1",
+      "birthYear": 1920
     }
   ],
   "movies": [
@@ -35,5 +41,5 @@
       "leadActorId": 3
     }
   ],
-  "$schema": "./node_modules/json-server/schema.json"
+  "$schema": "./.vscode/db.schema.json"
 }
