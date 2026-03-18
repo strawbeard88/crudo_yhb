@@ -14,10 +14,41 @@ const createActorMessage = document.getElementById("createActorMessage");
 const createMovieMessage = document.getElementById("createMovieMessage");
 const updateMovieMessage = document.getElementById("updateMovieMessage");
 const deleteMovieMessage = document.getElementById("deleteMovieMessage");
+const MESSAGE_TIMEOUT_MS = 4000;
+
+let statusMessageTimerId;
+const sectionMessageTimers = new WeakMap();
+
+function clearStatusTimer() {
+  if (statusMessageTimerId) {
+    clearTimeout(statusMessageTimerId);
+    statusMessageTimerId = undefined;
+  }
+}
+
+function clearSectionTimer(element) {
+  const timerId = sectionMessageTimers.get(element);
+
+  if (timerId) {
+    clearTimeout(timerId);
+    sectionMessageTimers.delete(element);
+  }
+}
 
 function setStatus(message, isError) {
-  statusMsg.textContent = message;
-  statusMsg.classList.toggle("error", Boolean(isError));
+  clearStatusTimer();
+  statusMsg.textContent = message || "";
+  statusMsg.classList.toggle("error", Boolean(isError) && Boolean(message));
+
+  if (!message) {
+    return;
+  }
+
+  statusMessageTimerId = setTimeout(function () {
+    statusMsg.textContent = "";
+    statusMsg.classList.remove("error");
+    statusMessageTimerId = undefined;
+  }, MESSAGE_TIMEOUT_MS);
 }
 
 function setSectionMessage(element, message, isError) {
@@ -25,8 +56,21 @@ function setSectionMessage(element, message, isError) {
     return;
   }
 
+  clearSectionTimer(element);
   element.textContent = message || "";
   element.classList.toggle("error", Boolean(isError) && Boolean(message));
+
+  if (!message) {
+    return;
+  }
+
+  const timerId = setTimeout(function () {
+    element.textContent = "";
+    element.classList.remove("error");
+    sectionMessageTimers.delete(element);
+  }, MESSAGE_TIMEOUT_MS);
+
+  sectionMessageTimers.set(element, timerId);
 }
 
 function clearSectionMessage(element) {
@@ -372,6 +416,16 @@ createMovieForm.addEventListener("submit", async function (event) {
 });
 
 async function updateMovie(id, title, genre, year, leadActorId) {
+  try {
+    await fetchResource(MOVIES_URL + "/" + id);
+  } catch (error) {
+    if (error.message === "Request failed with status 404") {
+      throw new Error("FILM_NOT_FOUND");
+    }
+
+    throw error;
+  }
+
   const response = await fetch(MOVIES_URL + "/" + id, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -402,6 +456,15 @@ updateMovieForm.addEventListener("submit", async function (event) {
   const year = document.getElementById("updateYear").value;
   const leadActorId = document.getElementById("updateLeadActor").value;
 
+  if (!/^\d+$/.test(id)) {
+    setSectionMessage(
+      updateMovieMessage,
+      "Ange ett giltigt numeriskt film-id.",
+      true,
+    );
+    return;
+  }
+
   try {
     await updateMovie(id, title, genre, year, leadActorId);
     updateMovieForm.reset();
@@ -418,6 +481,15 @@ updateMovieForm.addEventListener("submit", async function (event) {
       );
     }
   } catch (error) {
+    if (error.message === "FILM_NOT_FOUND") {
+      setSectionMessage(
+        updateMovieMessage,
+        "Ingen film hittades med id " + id + ".",
+        true,
+      );
+      return;
+    }
+
     setSectionMessage(
       updateMovieMessage,
       "Fel: Kunde inte uppdatera filmen.",
