@@ -199,12 +199,14 @@ async function loadData(successMessage, errorTarget) {
     setStatus(
       successMessage || "Data hämtad. Filmer och huvudskådisar visas nu.",
     );
+    return true;
   } catch (error) {
     setSectionMessage(
       target,
       "Kunde inte hämta data. Kontrollera att json-server är igång.",
       true,
     );
+    return false;
   }
 }
 
@@ -291,10 +293,18 @@ createActorForm.addEventListener("submit", async function (event) {
   try {
     await createActor(name, nationality, birthYear);
     createActorForm.reset();
-    await loadData(
+    const didLoad = await loadData(
       "Huvudskådis skapad! Listan uppdateras.",
       createActorMessage,
     );
+
+    if (didLoad) {
+      setSectionMessage(
+        createActorMessage,
+        "Huvudskådis skapad! Listan uppdateras.",
+        false,
+      );
+    }
   } catch (error) {
     setSectionMessage(
       createActorMessage,
@@ -340,7 +350,18 @@ createMovieForm.addEventListener("submit", async function (event) {
   try {
     await createMovie(title, genre, year, leadActorId);
     createMovieForm.reset();
-    await loadData("Film skapad! Listan uppdateras.", createMovieMessage);
+    const didLoad = await loadData(
+      "Film skapad! Listan uppdateras.",
+      createMovieMessage,
+    );
+
+    if (didLoad) {
+      setSectionMessage(
+        createMovieMessage,
+        "Film skapad! Listan uppdateras.",
+        false,
+      );
+    }
   } catch (error) {
     setSectionMessage(
       createMovieMessage,
@@ -384,7 +405,18 @@ updateMovieForm.addEventListener("submit", async function (event) {
   try {
     await updateMovie(id, title, genre, year, leadActorId);
     updateMovieForm.reset();
-    await loadData("Film med id " + id + " uppdaterad!", updateMovieMessage);
+    const didLoad = await loadData(
+      "Film med id " + id + " uppdaterad!",
+      updateMovieMessage,
+    );
+
+    if (didLoad) {
+      setSectionMessage(
+        updateMovieMessage,
+        "Film med id " + id + " uppdaterad!",
+        false,
+      );
+    }
   } catch (error) {
     setSectionMessage(
       updateMovieMessage,
@@ -395,6 +427,22 @@ updateMovieForm.addEventListener("submit", async function (event) {
 });
 
 async function deleteMovie(id) {
+  let movie;
+
+  try {
+    movie = await fetchResource(MOVIES_URL + "/" + id);
+  } catch (error) {
+    if (error.message === "Request failed with status 404") {
+      throw new Error("FILM_NOT_FOUND");
+    }
+
+    throw error;
+  }
+
+  if (!movie || movie.id === undefined || movie.id === null) {
+    throw new Error("FILM_NOT_FOUND");
+  }
+
   const response = await fetch(MOVIES_URL + "/" + id, {
     method: "DELETE",
   });
@@ -424,11 +472,28 @@ deleteMovieForm.addEventListener("submit", async function (event) {
   try {
     await deleteMovie(id);
     deleteMovieForm.reset();
-    await loadData(
+    const didLoad = await loadData(
       "Film med id " + id + " har tagits bort.",
       deleteMovieMessage,
     );
+
+    if (didLoad) {
+      setSectionMessage(
+        deleteMovieMessage,
+        "Film med id " + id + " har tagits bort.",
+        false,
+      );
+    }
   } catch (error) {
+    if (error.message === "FILM_NOT_FOUND") {
+      setSectionMessage(
+        deleteMovieMessage,
+        "Ingen film hittades med id " + id + ".",
+        true,
+      );
+      return;
+    }
+
     setSectionMessage(
       deleteMovieMessage,
       "Fel: Kunde inte ta bort filmen.",

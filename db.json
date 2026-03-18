@@ -32,6 +32,13 @@
       "genre": "Action",
       "year": 2000,
       "leadActorId": 3
+    },
+    {
+      "id": 4,
+      "title": "test",
+      "genre": "test",
+      "year": 1900,
+      "leadActorId": 1
     }
   ],
   "$schema": "./.vscode/db.schema.json"
