@@ -27,6 +27,11 @@
       <section class="panel controls">
         <h2>Hämta filmer</h2>
         <button id="loadMoviesBtn" type="button">Visa alla filmer</button>
+        <div
+          id="loadMoviesMessage"
+          class="status form-message"
+          aria-live="polite"
+        ></div>
 
         <form id="movieByIdForm">
           <label for="movieIdInput">Hämta en film via id</label>
@@ -40,6 +45,11 @@
             />
             <button type="submit">Visa film</button>
           </div>
+          <div
+            id="movieByIdMessage"
+            class="status form-message"
+            aria-live="polite"
+          ></div>
         </form>
       </section>
 
@@ -78,6 +88,11 @@
           />
 
           <button type="submit">Skapa huvudskådis</button>
+          <div
+            id="createActorMessage"
+            class="status form-message"
+            aria-live="polite"
+          ></div>
         </form>
       </section>
 
@@ -116,6 +131,11 @@
           </select>
 
           <button type="submit">Skapa film</button>
+          <div
+            id="createMovieMessage"
+            class="status form-message"
+            aria-live="polite"
+          ></div>
         </form>
       </section>
 
@@ -163,6 +183,11 @@
           </select>
 
           <button type="submit">Uppdatera film</button>
+          <div
+            id="updateMovieMessage"
+            class="status form-message"
+            aria-live="polite"
+          ></div>
         </form>
       </section>
 
@@ -174,12 +199,18 @@
             <input
               id="deleteMovieId"
               name="id"
-              type="number"
-              min="1"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
               placeholder="Ange filmens id"
             />
             <button type="submit">Ta bort</button>
           </div>
+          <div
+            id="deleteMovieMessage"
+            class="status form-message"
+            aria-live="polite"
+          ></div>
         </form>
       </section>
 

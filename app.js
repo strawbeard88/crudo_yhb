@@ -8,10 +8,54 @@ const movieList = document.getElementById("movieList");
 const actorList = document.getElementById("actorList");
 const createLeadActorSelect = document.getElementById("createLeadActor");
 const updateLeadActorSelect = document.getElementById("updateLeadActor");
+const loadMoviesMessage = document.getElementById("loadMoviesMessage");
+const movieByIdMessage = document.getElementById("movieByIdMessage");
+const createActorMessage = document.getElementById("createActorMessage");
+const createMovieMessage = document.getElementById("createMovieMessage");
+const updateMovieMessage = document.getElementById("updateMovieMessage");
+const deleteMovieMessage = document.getElementById("deleteMovieMessage");
 
 function setStatus(message, isError) {
   statusMsg.textContent = message;
   statusMsg.classList.toggle("error", Boolean(isError));
+}
+
+function setSectionMessage(element, message, isError) {
+  if (!element) {
+    return;
+  }
+
+  element.textContent = message || "";
+  element.classList.toggle("error", Boolean(isError) && Boolean(message));
+}
+
+function clearSectionMessage(element) {
+  setSectionMessage(element, "", false);
+}
+
+function getNumericIdValue(id) {
+  const numericId = Number(id);
+
+  if (Number.isInteger(numericId) && numericId > 0) {
+    return numericId;
+  }
+
+  return null;
+}
+
+async function getNextNumericId(url) {
+  const records = await fetchResource(url);
+  const maxId = records.reduce(function (highest, record) {
+    const numericId = getNumericIdValue(record.id);
+
+    if (numericId === null) {
+      return highest;
+    }
+
+    return Math.max(highest, numericId);
+  }, 0);
+
+  return maxId + 1;
 }
 
 function createOption(actor) {
@@ -137,7 +181,9 @@ async function fetchResource(url) {
   return response.json();
 }
 
-async function loadData(successMessage) {
+async function loadData(successMessage, errorTarget) {
+  const target = errorTarget || loadMoviesMessage;
+  clearSectionMessage(target);
   setStatus("Hämtar filmer och huvudskådisar...");
 
   try {
@@ -154,7 +200,8 @@ async function loadData(successMessage) {
       successMessage || "Data hämtad. Filmer och huvudskådisar visas nu.",
     );
   } catch (error) {
-    setStatus(
+    setSectionMessage(
+      target,
       "Kunde inte hämta data. Kontrollera att json-server är igång.",
       true,
     );
@@ -188,6 +235,7 @@ function renderSingleMovie(movie, actorName) {
 
 movieByIdForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  clearSectionMessage(movieByIdMessage);
 
   const id = document.getElementById("movieIdInput").value.trim();
 
@@ -199,19 +247,22 @@ movieByIdForm.addEventListener("submit", async function (event) {
     setStatus("Film med id " + id + " hämtad.");
   } catch (error) {
     singleMovieResult.textContent = "";
-    const msg = document.createElement("p");
-    msg.className = "empty";
-    msg.textContent = "Ingen film hittades med id " + id + ".";
-    singleMovieResult.appendChild(msg);
-    setStatus("Ingen film hittades med id " + id + ".", true);
+    setSectionMessage(
+      movieByIdMessage,
+      "Ingen film hittades med id " + id + ".",
+      true,
+    );
   }
 });
 
 async function createActor(name, nationality, birthYear) {
+  const nextId = await getNextNumericId(ACTORS_URL);
+
   const response = await fetch(ACTORS_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      id: nextId,
       name: name,
       nationality: nationality,
       birthYear: Number(birthYear),
@@ -229,6 +280,7 @@ const createActorForm = document.getElementById("createActorForm");
 
 createActorForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  clearSectionMessage(createActorMessage);
 
   const name = document.getElementById("createActorName").value.trim();
   const nationality = document
@@ -239,17 +291,27 @@ createActorForm.addEventListener("submit", async function (event) {
   try {
     await createActor(name, nationality, birthYear);
     createActorForm.reset();
-    await loadData("Huvudskådis skapad! Listan uppdateras.");
+    await loadData(
+      "Huvudskådis skapad! Listan uppdateras.",
+      createActorMessage,
+    );
   } catch (error) {
-    setStatus("Fel: Kunde inte skapa huvudskådis.", true);
+    setSectionMessage(
+      createActorMessage,
+      "Fel: Kunde inte skapa huvudskådis.",
+      true,
+    );
   }
 });
 
 async function createMovie(title, genre, year, leadActorId) {
+  const nextId = await getNextNumericId(MOVIES_URL);
+
   const response = await fetch(MOVIES_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      id: nextId,
       title: title,
       genre: genre,
       year: Number(year),
@@ -268,6 +330,7 @@ const createMovieForm = document.getElementById("createMovieForm");
 
 createMovieForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  clearSectionMessage(createMovieMessage);
 
   const title = document.getElementById("createTitle").value.trim();
   const genre = document.getElementById("createGenre").value.trim();
@@ -277,9 +340,13 @@ createMovieForm.addEventListener("submit", async function (event) {
   try {
     await createMovie(title, genre, year, leadActorId);
     createMovieForm.reset();
-    await loadData("Film skapad! Listan uppdateras.");
+    await loadData("Film skapad! Listan uppdateras.", createMovieMessage);
   } catch (error) {
-    setStatus("Fel: Kunde inte skapa filmen.", true);
+    setSectionMessage(
+      createMovieMessage,
+      "Fel: Kunde inte skapa filmen.",
+      true,
+    );
   }
 });
 
@@ -306,6 +373,7 @@ const updateMovieForm = document.getElementById("updateMovieForm");
 
 updateMovieForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  clearSectionMessage(updateMovieMessage);
 
   const id = document.getElementById("updateMovieId").value.trim();
   const title = document.getElementById("updateTitle").value.trim();
@@ -316,9 +384,13 @@ updateMovieForm.addEventListener("submit", async function (event) {
   try {
     await updateMovie(id, title, genre, year, leadActorId);
     updateMovieForm.reset();
-    await loadData("Film med id " + id + " uppdaterad!");
+    await loadData("Film med id " + id + " uppdaterad!", updateMovieMessage);
   } catch (error) {
-    setStatus("Fel: Kunde inte uppdatera filmen.", true);
+    setSectionMessage(
+      updateMovieMessage,
+      "Fel: Kunde inte uppdatera filmen.",
+      true,
+    );
   }
 });
 
@@ -336,20 +408,37 @@ const deleteMovieForm = document.getElementById("deleteMovieForm");
 
 deleteMovieForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  clearSectionMessage(deleteMovieMessage);
 
   const id = document.getElementById("deleteMovieId").value.trim();
+
+  if (!/^\d+$/.test(id)) {
+    setSectionMessage(
+      deleteMovieMessage,
+      "Ange ett giltigt numeriskt film-id.",
+      true,
+    );
+    return;
+  }
 
   try {
     await deleteMovie(id);
     deleteMovieForm.reset();
-    await loadData("Film med id " + id + " har tagits bort.");
+    await loadData(
+      "Film med id " + id + " har tagits bort.",
+      deleteMovieMessage,
+    );
   } catch (error) {
-    setStatus("Fel: Kunde inte ta bort filmen.", true);
+    setSectionMessage(
+      deleteMovieMessage,
+      "Fel: Kunde inte ta bort filmen.",
+      true,
+    );
   }
 });
 
 loadMoviesBtn.addEventListener("click", function () {
-  loadData();
+  loadData(undefined, loadMoviesMessage);
 });
 
-loadData();
+loadData(undefined, loadMoviesMessage);

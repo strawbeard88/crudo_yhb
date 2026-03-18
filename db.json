@@ -19,20 +19,13 @@
       "birthYear": 1964
     },
     {
-      "id": "ead4",
+      "id": "4",
       "name": "Test 1",
       "nationality": "Test 1",
       "birthYear": 1920
     }
   ],
   "movies": [
-    {
-      "id": "2",
-      "title": "La La Land",
-      "genre": "Drama",
-      "year": 2016,
-      "leadActorId": 2
-    },
     {
       "id": "3",
       "title": "Gladiator",
