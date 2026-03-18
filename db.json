@@ -7,38 +7,19 @@
       "birthYear": 1974
     },
     {
-      "id": "2",
-      "name": "Emma Stone",
-      "nationality": "USA",
-      "birthYear": 1988
-    },
-    {
       "id": "3",
       "name": "Russell Crowe",
       "nationality": "Nya Zeeland",
       "birthYear": 1964
-    },
-    {
-      "id": "4",
-      "name": "Test 1",
-      "nationality": "Test 1",
-      "birthYear": 1920
     }
   ],
   "movies": [
     {
-      "id": "3",
       "title": "Gladiator",
       "genre": "Action",
-      "year": 2000,
-      "leadActorId": 3
-    },
-    {
-      "id": 4,
-      "title": "test",
-      "genre": "test",
-      "year": 1900,
-      "leadActorId": 1
+      "year": 2001,
+      "leadActorId": 3,
+      "id": "3"
     }
   ],
   "$schema": "./.vscode/db.schema.json"

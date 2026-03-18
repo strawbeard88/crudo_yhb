@@ -21,7 +21,7 @@
           Här ska du kunna hämta, skapa, uppdatera och ta bort filmer samt se
           vilken huvudskådis som hör till varje film.
         </p>
-        <p id="status" class="status">Statusmeddelanden visas här.</p>
+        <p id="status" class="status">Meddelanden visas här.</p>
       </section>
 
       <section class="panel controls">
@@ -208,6 +208,29 @@
           </div>
           <div
             id="deleteMovieMessage"
+            class="status form-message"
+            aria-live="polite"
+          ></div>
+        </form>
+      </section>
+
+      <section class="panel controls">
+        <h2>Ta bort huvudskådis</h2>
+        <form id="deleteActorForm">
+          <label for="deleteActorId">Huvudskådis-id</label>
+          <div class="form-row">
+            <input
+              id="deleteActorId"
+              name="id"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              placeholder="Ange huvudskådisens id"
+            />
+            <button type="submit">Ta bort</button>
+          </div>
+          <div
+            id="deleteActorMessage"
             class="status form-message"
             aria-live="polite"
           ></div>

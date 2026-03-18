@@ -14,41 +14,10 @@ const createActorMessage = document.getElementById("createActorMessage");
 const createMovieMessage = document.getElementById("createMovieMessage");
 const updateMovieMessage = document.getElementById("updateMovieMessage");
 const deleteMovieMessage = document.getElementById("deleteMovieMessage");
-const MESSAGE_TIMEOUT_MS = 4000;
-
-let statusMessageTimerId;
-const sectionMessageTimers = new WeakMap();
-
-function clearStatusTimer() {
-  if (statusMessageTimerId) {
-    clearTimeout(statusMessageTimerId);
-    statusMessageTimerId = undefined;
-  }
-}
-
-function clearSectionTimer(element) {
-  const timerId = sectionMessageTimers.get(element);
-
-  if (timerId) {
-    clearTimeout(timerId);
-    sectionMessageTimers.delete(element);
-  }
-}
-
+const deleteActorMessage = document.getElementById("deleteActorMessage");
 function setStatus(message, isError) {
-  clearStatusTimer();
   statusMsg.textContent = message || "";
   statusMsg.classList.toggle("error", Boolean(isError) && Boolean(message));
-
-  if (!message) {
-    return;
-  }
-
-  statusMessageTimerId = setTimeout(function () {
-    statusMsg.textContent = "";
-    statusMsg.classList.remove("error");
-    statusMessageTimerId = undefined;
-  }, MESSAGE_TIMEOUT_MS);
 }
 
 function setSectionMessage(element, message, isError) {
@@ -56,21 +25,8 @@ function setSectionMessage(element, message, isError) {
     return;
   }
 
-  clearSectionTimer(element);
   element.textContent = message || "";
   element.classList.toggle("error", Boolean(isError) && Boolean(message));
-
-  if (!message) {
-    return;
-  }
-
-  const timerId = setTimeout(function () {
-    element.textContent = "";
-    element.classList.remove("error");
-    sectionMessageTimers.delete(element);
-  }, MESSAGE_TIMEOUT_MS);
-
-  sectionMessageTimers.set(element, timerId);
 }
 
 function clearSectionMessage(element) {
@@ -182,7 +138,7 @@ function renderMovies(movies, actors) {
   if (!movies.length) {
     const empty = document.createElement("p");
     empty.className = "empty";
-    empty.textContent = "Inga filmer hittades.";
+    empty.textContent = "Inga filmer än.";
     movieList.appendChild(empty);
     return;
   }
@@ -205,7 +161,7 @@ function renderActors(actors) {
   if (!actors.length) {
     const empty = document.createElement("p");
     empty.className = "empty";
-    empty.textContent = "Inga huvudskådisar hittades.";
+    empty.textContent = "Inga skådisar än.";
     actorList.appendChild(empty);
     return;
   }
@@ -228,7 +184,7 @@ async function fetchResource(url) {
 async function loadData(successMessage, errorTarget) {
   const target = errorTarget || loadMoviesMessage;
   clearSectionMessage(target);
-  setStatus("Hämtar filmer och huvudskådisar...");
+  setStatus("Laddar filmer och skådisar...");
 
   try {
     const [movies, actors] = await Promise.all([
@@ -240,14 +196,12 @@ async function loadData(successMessage, errorTarget) {
     renderActors(actors);
     populateActorSelect(createLeadActorSelect, actors);
     populateActorSelect(updateLeadActorSelect, actors);
-    setStatus(
-      successMessage || "Data hämtad. Filmer och huvudskådisar visas nu.",
-    );
+    setStatus(successMessage || "Klart! Filmer och skådisar visas.");
     return true;
   } catch (error) {
     setSectionMessage(
       target,
-      "Kunde inte hämta data. Kontrollera att json-server är igång.",
+      "Kunde inte hämta data. Kolla att servern är igång.",
       true,
     );
     return false;
@@ -290,12 +244,12 @@ movieByIdForm.addEventListener("submit", async function (event) {
     const actor = await fetchResource(ACTORS_URL + "/" + movie.leadActorId);
     const actorName = actor.name || "Okänd";
     renderSingleMovie(movie, actorName);
-    setStatus("Film med id " + id + " hämtad.");
+    setStatus("Visar film " + id + ".");
   } catch (error) {
     singleMovieResult.textContent = "";
     setSectionMessage(
       movieByIdMessage,
-      "Ingen film hittades med id " + id + ".",
+      "Hittar ingen film med id " + id + ".",
       true,
     );
   }
@@ -337,24 +291,13 @@ createActorForm.addEventListener("submit", async function (event) {
   try {
     await createActor(name, nationality, birthYear);
     createActorForm.reset();
-    const didLoad = await loadData(
-      "Huvudskådis skapad! Listan uppdateras.",
-      createActorMessage,
-    );
+    const didLoad = await loadData("Skådis sparad.", createActorMessage);
 
     if (didLoad) {
-      setSectionMessage(
-        createActorMessage,
-        "Huvudskådis skapad! Listan uppdateras.",
-        false,
-      );
+      setSectionMessage(createActorMessage, "Skådis sparad.", false);
     }
   } catch (error) {
-    setSectionMessage(
-      createActorMessage,
-      "Fel: Kunde inte skapa huvudskådis.",
-      true,
-    );
+    setSectionMessage(createActorMessage, "Kunde inte spara skådisen.", true);
   }
 });
 
@@ -394,24 +337,13 @@ createMovieForm.addEventListener("submit", async function (event) {
   try {
     await createMovie(title, genre, year, leadActorId);
     createMovieForm.reset();
-    const didLoad = await loadData(
-      "Film skapad! Listan uppdateras.",
-      createMovieMessage,
-    );
+    const didLoad = await loadData("Film sparad.", createMovieMessage);
 
     if (didLoad) {
-      setSectionMessage(
-        createMovieMessage,
-        "Film skapad! Listan uppdateras.",
-        false,
-      );
+      setSectionMessage(createMovieMessage, "Film sparad.", false);
     }
   } catch (error) {
-    setSectionMessage(
-      createMovieMessage,
-      "Fel: Kunde inte skapa filmen.",
-      true,
-    );
+    setSectionMessage(createMovieMessage, "Kunde inte spara filmen.", true);
   }
 });
 
@@ -459,7 +391,7 @@ updateMovieForm.addEventListener("submit", async function (event) {
   if (!/^\d+$/.test(id)) {
     setSectionMessage(
       updateMovieMessage,
-      "Ange ett giltigt numeriskt film-id.",
+      "Skriv ett giltigt film-id (bara siffror).",
       true,
     );
     return;
@@ -469,14 +401,14 @@ updateMovieForm.addEventListener("submit", async function (event) {
     await updateMovie(id, title, genre, year, leadActorId);
     updateMovieForm.reset();
     const didLoad = await loadData(
-      "Film med id " + id + " uppdaterad!",
+      "Film " + id + " uppdaterad.",
       updateMovieMessage,
     );
 
     if (didLoad) {
       setSectionMessage(
         updateMovieMessage,
-        "Film med id " + id + " uppdaterad!",
+        "Film " + id + " uppdaterad.",
         false,
       );
     }
@@ -484,17 +416,13 @@ updateMovieForm.addEventListener("submit", async function (event) {
     if (error.message === "FILM_NOT_FOUND") {
       setSectionMessage(
         updateMovieMessage,
-        "Ingen film hittades med id " + id + ".",
+        "Hittar ingen film med id " + id + ".",
         true,
       );
       return;
     }
 
-    setSectionMessage(
-      updateMovieMessage,
-      "Fel: Kunde inte uppdatera filmen.",
-      true,
-    );
+    setSectionMessage(updateMovieMessage, "Kunde inte uppdatera filmen.", true);
   }
 });
 
@@ -535,7 +463,7 @@ deleteMovieForm.addEventListener("submit", async function (event) {
   if (!/^\d+$/.test(id)) {
     setSectionMessage(
       deleteMovieMessage,
-      "Ange ett giltigt numeriskt film-id.",
+      "Skriv ett giltigt film-id (bara siffror).",
       true,
     );
     return;
@@ -545,14 +473,14 @@ deleteMovieForm.addEventListener("submit", async function (event) {
     await deleteMovie(id);
     deleteMovieForm.reset();
     const didLoad = await loadData(
-      "Film med id " + id + " har tagits bort.",
+      "Film " + id + " borttagen.",
       deleteMovieMessage,
     );
 
     if (didLoad) {
       setSectionMessage(
         deleteMovieMessage,
-        "Film med id " + id + " har tagits bort.",
+        "Film " + id + " borttagen.",
         false,
       );
     }
@@ -560,17 +488,108 @@ deleteMovieForm.addEventListener("submit", async function (event) {
     if (error.message === "FILM_NOT_FOUND") {
       setSectionMessage(
         deleteMovieMessage,
-        "Ingen film hittades med id " + id + ".",
+        "Hittar ingen film med id " + id + ".",
         true,
       );
       return;
     }
 
+    setSectionMessage(deleteMovieMessage, "Kunde inte ta bort filmen.", true);
+  }
+});
+
+async function deleteActor(id) {
+  let actor;
+  const actorId = Number(id);
+
+  try {
+    actor = await fetchResource(ACTORS_URL + "/" + id);
+  } catch (error) {
+    if (error.message === "Request failed with status 404") {
+      throw new Error("ACTOR_NOT_FOUND");
+    }
+
+    throw error;
+  }
+
+  if (!actor || actor.id === undefined || actor.id === null) {
+    throw new Error("ACTOR_NOT_FOUND");
+  }
+
+  const movies = await fetchResource(MOVIES_URL);
+  const linkedMovies = movies.filter(function (movie) {
+    return Number(movie.leadActorId) === actorId;
+  });
+
+  if (linkedMovies.length > 0) {
+    const inUseError = new Error("ACTOR_IN_USE");
+    inUseError.movieCount = linkedMovies.length;
+    throw inUseError;
+  }
+
+  const response = await fetch(ACTORS_URL + "/" + id, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error("Kunde inte ta bort huvudskådisen");
+  }
+}
+
+const deleteActorForm = document.getElementById("deleteActorForm");
+
+deleteActorForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  clearSectionMessage(deleteActorMessage);
+
+  const id = document.getElementById("deleteActorId").value.trim();
+
+  if (!/^\d+$/.test(id)) {
     setSectionMessage(
-      deleteMovieMessage,
-      "Fel: Kunde inte ta bort filmen.",
+      deleteActorMessage,
+      "Skriv ett giltigt skådis-id (bara siffror).",
       true,
     );
+    return;
+  }
+
+  try {
+    await deleteActor(id);
+    deleteActorForm.reset();
+    const didLoad = await loadData(
+      "Skådis " + id + " borttagen.",
+      deleteActorMessage,
+    );
+
+    if (didLoad) {
+      setSectionMessage(
+        deleteActorMessage,
+        "Skådis " + id + " borttagen.",
+        false,
+      );
+    }
+  } catch (error) {
+    if (error.message === "ACTOR_NOT_FOUND") {
+      setSectionMessage(
+        deleteActorMessage,
+        "Hittar ingen skådis med id " + id + ".",
+        true,
+      );
+      return;
+    }
+
+    if (error.message === "ACTOR_IN_USE") {
+      setSectionMessage(
+        deleteActorMessage,
+        "Kan inte ta bort skådisen. Den används i " +
+          error.movieCount +
+          " film(er).",
+        true,
+      );
+      return;
+    }
+
+    setSectionMessage(deleteActorMessage, "Kunde inte ta bort skådisen.", true);
   }
 });
 
